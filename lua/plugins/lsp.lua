@@ -1,5 +1,4 @@
 return {
-  -- Mason
   {
     "mason-org/mason.nvim",
     config = function()
@@ -9,7 +8,27 @@ return {
     end,
   },
 
-  -- LSP
+  {
+    "mason-org/mason-lspconfig.nvim",
+    dependencies = { "mason-org/mason.nvim" },
+    config = function()
+      local servers = {
+        "lua_ls",
+        "ts_ls",
+        "html",
+        "cssls",
+        "intelephense",
+        "tailwindcss",
+        "emmet_ls",
+      }
+
+      require("mason-lspconfig").setup({
+        ensure_installed = servers,
+        automatic_installation = true,
+      })
+    end,
+  },
+
   {
     "neovim/nvim-lspconfig",
     dependencies = {
@@ -28,12 +47,12 @@ return {
         "cssls",
         "intelephense",
         "tailwindcss",
+        "emmet_ls",
       }
 
       for _, server in ipairs(servers) do
-        vim.lsp.config(server, {
+        local config = {
           capabilities = capabilities,
-
           on_attach = function(client, bufnr)
             local opts = { buffer = bufnr, silent = true }
 
@@ -42,8 +61,25 @@ return {
             vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts)
             vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
           end,
-        })
+        }
 
+        if server == "emmet_ls" then
+          config.filetypes = {
+            "html",
+            "css",
+            "scss",
+            "sass",
+            "javascriptreact",
+            "typescriptreact",
+            "javascript",
+            "typescript",
+            "vue",
+            "svelte",
+            "markdown",
+          }
+        end
+
+        vim.lsp.config(server, config)
         vim.lsp.enable(server)
       end
     end,

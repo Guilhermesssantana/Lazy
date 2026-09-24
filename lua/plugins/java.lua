@@ -13,6 +13,38 @@ return {
 
     config = function()
       local jdtls = require("jdtls")
+      local dap = require("dap")
+      local dapui = require("dapui")
+
+      dapui.setup()
+
+      if not dap.configurations.java or vim.tbl_isempty(dap.configurations.java) then
+        dap.configurations.java = {
+          {
+            type = "java",
+            request = "launch",
+            name = "Launch Java",
+            mainClass = function()
+              return vim.fn.input("Main class: ")
+            end,
+            projectName = function()
+              return vim.fn.input("Project name: ")
+            end,
+            cwd = "${workspaceFolder}",
+            console = "integratedTerminal",
+          },
+        }
+      end
+
+      dap.listeners.before.event_initialized["dapui_config"] = function()
+        dapui.open()
+      end
+      dap.listeners.before.event_terminated["dapui_config"] = function()
+        dapui.close()
+      end
+      dap.listeners.before.event_exited["dapui_config"] = function()
+        dapui.close()
+      end
 
       local function attach_jdtls()
         local root_markers = {

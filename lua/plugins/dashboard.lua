@@ -19,6 +19,11 @@ return {
 
     -- Botões
     dashboard.section.buttons.val = {
+      dashboard.button(
+        "n",
+        "  Novo arquivo",
+        "<cmd>lua vim.ui.input({ prompt = 'Novo arquivo: ', default = '' }, function(name) if name and name ~= '' then vim.fn.mkdir(vim.fn.fnamemodify(name, ':p:h'), 'p'); vim.cmd('edit ' .. vim.fn.fnameescape(name)) end end)<CR>"
+      ),
       dashboard.button("f", "󰈞  Find File", ":Telescope find_files<CR>"),
       dashboard.button("g", "󰊄  Live Grep", ":Telescope live_grep<CR>"),
       dashboard.button("r", "󱋡  Recent Files", ":Telescope oldfiles<CR>"),
